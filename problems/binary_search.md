@@ -7,15 +7,47 @@ The simplest variant in this problem family is:
 
 Given a linear sequence of **_distinct_** elements in sorted order and a key, determine if the key exists in the sequence; return `true` if it exists, `false` otherwise.
 
+A recursive solution is:
+```
+binary_search(input_range, range_first, range_last, key)
+{
+    if (range_first == range_last)
+        return input_range[range_first] == key
+    range_mid = range_first + (range_last - range_first) / 2;
+    if (input_range[range_mid] == key)
+        return true
+    if (input_range[range_mid] < key)
+        return binary_search(input_range, range_first, range_mid - 1, key)
+    return binary_search(input_range, range_mid + 1, range_last, key)
+}
+```
+
+An iterative solution is:
+```
+binary_search(input_range, range_first, range_last, key)
+{
+    while (range_first < range_last) {
+        range_mid = range_first + (range_last - range_first) / 2;
+        if (input_range[range_mid] == key)
+            return true
+        if (input_range[range_mid] < key)
+            range_last = range_mid - 1
+        else
+            range_first = range_mid + 1
+    }
+    return false
+}
+```
+
 ### Types of Sequences
-The sequence ordering above need not always be in a sorted, i.e., monotonically increasing order (`a[i] < a[i + 1], 0 <= i < (n - 1)`).
+The sequence ordering above need not always be in a sorted, i.e., monotonically increasing order.
 
 They can also be among the following:
-* **_Absolute Sorted sequence_** - the absolute values of the elements are in monotonically increasing order, `|a[i]| < |a[i + 1]|, 0 <= i < (n - 1)`  
+* **_Absolute Sorted sequence_** - the absolute values of the elements are in monotonically increasing order
   * E.g. `<-1,2,3,-4,5>`, where the corresponding absolute values `<1,2,3,4,5>` are in increasing order
-* **_Cyclically Sorted sequence_** - monotonically increasing sequence rotated (left or right) by `k`, `k` modulo `n` != `0`, positions, `a[i] < a[i + 1], 0 <= i < j and a[i] < a[(i + 1) % n], j <= i < n, 0 < j < n - 1`
+* **_Cyclically Sorted sequence_** - monotonically increasing sequence rotated (left or right) by at least `1` and at most `(n - 1)` positions
   * E.g. `<3,4,5,1,2>`, which is obtained by rotating `<1,2,3,4,5>` left by two positions
-* **_Bitonic sequence_** - an increasing contiguous subsequence followed by a contiguous decreasing subsequence, `a[i] <= a[i + 1], 0 < i < j and a[i] > a[i + 1], j <= i < n - 2, 0 < j < n - 1`
+* **_Bitonic sequence_** - an increasing contiguous subsequence followed by a contiguous decreasing subsequence
   * E.g. `<1,2,5,4,3>`, where `<1,2,5>` is increasing and `<5,4,3>` is decreasing
 
 In the examples above, the **_less-than_** (`<`) operator is being used for ordering the elements in the sequence. This can be replaced with any [transitive](https://en.wikipedia.org/wiki/Transitive_relation) function that takes as arguments two elements and returns `true` or `false` indicating the relative ordering of those two elements in the sequence.
@@ -44,7 +76,7 @@ Furthermore, when the sequence has duplicates, a few other variants can be added
 ## Summary
 **Add info when the sequence has duplicates**
 
-Sequence Type | Key Insight | Performance | Difficulty
+Ordering | Key Insight | Performance | Difficulty
 --- | --- | --- | ---
 Sorted | NA | O(lg n) | Easy
 Abs-sorted | All the -ve keys are in sorted order and so are all the +ve keys | O(lg n) | Easy
@@ -63,8 +95,8 @@ Find the range of indices _equal to_ `x` | [`equal_range()`](http://en.cpprefere
 * [Search Insertion Position](https://leetcode.com/problems/search-insert-position)
 * [Search for Range of Indices](https://leetcode.com/problems/search-for-a-range)
 * [Search in Rotated Sorted Array without Duplicates](https://leetcode.com/problems/search-in-rotated-sorted-array)
-* [Search in Rotated Sorted Array with Duplicates](https://leetcode.com/problems/search-in-rotated-sorted-array-ii)
 * [Find Minimum in Rotated Sorted Array without Duplicates](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array)
+* [Search in Rotated Sorted Array with Duplicates](https://leetcode.com/problems/search-in-rotated-sorted-array-ii)
 * [Find Minimum in Rotated Sorted Array with Duplicates](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii)
 
 ## Problems on 2D arrays
