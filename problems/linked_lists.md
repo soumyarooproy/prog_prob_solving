@@ -10,15 +10,19 @@
    1. [Determine if a list has a cycle](#is_cycle)
    1. [Determine if two lists intersect](#is_intersecting)
 1. [Write/Modify Problems](#wr_problems)
+   1. [Insert an element into a list](#insert)
+   1. [Delete list element(s)](#delete)
+   1. [Reverse a list](#reverse)
+   1. [Determine if a list is palindromic](#palindrome)
    1. [Uniquify the successively repeating elements in a list](#uniquify)
-   1. [Remove duplicate items from a list](#dedup)
+   1. [Remove duplicate items from a list](#remove_dups)
    1. [Rotate a list](#rotate)
    1. [Splice a list in another list](#splice)
    1. [Merge two sorted lists](#merge)
    1. [Interleave two lists](#interleave)
    1. [Split a list into two lists](#split)
    1. [Partition a list](#partition)
-1. [Copy Problems](#copy)
+1. [Copy Problems](#cp_problems)
    1. [Deep clone a list](#clone)
    1. [Increment arbitrary length number](#increment)
    1. [Add two arbitrary length numbers](#add)
@@ -74,7 +78,7 @@ node_type find_mid(node_type head):
 ```
 
 ### Find the `k`-th last node from the list <a name="find_kth_last"></a>
-Use `leader` and `follower` iterators such that 'leader' iterator is `k` steps ahead of `follower` iterator:
+Use `leader` and `follower` iterators such that 'leader' iterator is `k` nodes ahead of `follower` iterator:
 ```python
 node_type find_kth_last(node_type head, int k):
  1  leader = head
@@ -93,7 +97,12 @@ node_type find_kth_last(node_type head, int k):
 
 #### Variant: Find the intersecting node
 
-### Determine if two lists intersect <a name="is_intersecting"></a>
+### Determine if two lists intersect/overlap <a name="is_intersecting"></a>
+Steps:
+1. Count the number of nodes in each list
+1. Advance a pointer from the head of the longer list so that it is at the same distance from the end as the number of nodes in the shorter list
+1. Start a pointer at the head of the shorter list and advance both of them in tandem
+1. If they become equal before becoming NULL, the lists intersect; otherwise, not
 
 #### Variant: What if there is a cycle?
 
@@ -181,6 +190,17 @@ void delete_after(node_type head, node_type target):
 ```
 
 ### Reverse a list <a name="reverse"></a>
+```python
+node_type reverse(node_type head)
+1   pre_head = new node_type
+2   pre_head.next = NULL
+3   while (head != NULL):
+4       head_next = head.next
+5       head.next = pre_head.next
+6       pre_head.next = head
+7       head = head_next
+8   return dummy_head.next
+```
 
 #### Variant: Reverse a sublist
 
@@ -194,7 +214,7 @@ Steps:
 ### Uniquify the successively repeating elements in a list <a name="uniquify"></a>
 **_Note that if the list is sorted, it uniquifies the entire list list_**
 
-### Remove duplicate items from a list <a name="dedup"></a>
+### Remove duplicate items from a list <a name="remove_dups"></a>
 
 ### Rotate a list <a name="rotate"></a>
 By `0 < k < n`, `n` is the length of the list, nodes
@@ -218,7 +238,7 @@ One with odd numbered nodes and the other with the rest of the nodes
 
 ### Partition a list <a name="partition"></a>
 
-## Copy Problems <a name="copy"></a>
+## Copy Problems <a name="cp_problems"></a>
 
 ### Deep clone a list <a name="clone"></a>
 
