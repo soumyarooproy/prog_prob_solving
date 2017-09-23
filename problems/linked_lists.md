@@ -10,6 +10,8 @@
    1. [Determine if a list has a cycle](#is_cycle)
    1. [Determine if two lists intersect](#is_intersecting)
 1. [Write/Modify Problems](#wr_problems)
+   1. [Fundamental Modify Operations](#fundamental_ops)
+   1. [Important Tips](#important_tips)
    1. [Insert an element into a list](#insert)
    1. [Delete list element(s)](#delete)
    1. [Reverse a list](#reverse)
@@ -109,7 +111,50 @@ Steps:
 ## Write/Modify Problems <a name="wr_problems"></a>
 In this class of problems, the input list is modified.
 
-**Important Tip 1:** Use a terminal/sentinel node for all the problems **_where the original list head may not be the new list head_**. This really simplifies the control flow.
+### Fundamental Modify Operations <a name="fundamental_ops"></a>
+The following are fundamental singly-linked list operations, which serve as building blocks for almost all the problems.
+
+
+#### Insert a new node after a target node
+```python
+void insert_after(node_type target, node_type new_node):
+ 1  if (target != NULL):
+ 2      node = target.next
+ 3      target.next = new_node
+ 4      new_node.next = next_target
+```
+**Note:** The function above does not insert the new node if `target` is `NULL`
+
+The above function can be used to insert a new node with a specified key after a target node:
+```python
+void insert_after(node_type target, key_type key):
+ 1  new_node = new node_type
+ 2  new_node.key = key
+ 3  insert_after(target, new_node)
+```
+
+#### Delete a node after a target node
+```python
+void delete_after(node_type target):
+ 1  if (target != NULL and target.next != NULL):
+ 2      next_target = target.next
+ 3      target.next = target.next.next
+ 4      delete next_target
+```
+**Note:** Similar to the insert function, no node is deleted if `target` is `NULL`
+
+#### Extract a node after a target node
+```python
+node_type extract_after(node_type target):
+ 1  if (target != NULL and target.next != NULL):
+ 2      next_target = target.next
+ 3      target.next = target.next.next
+ 4  return next_target
+```
+**Note:** Again, no node is extracted if `target` is `NULL`. Further, the extracted node's `next` pointer, if applicable, is undefined.
+
+### Important Tips <a name="important_tips"></a>
+**Tip 1:** Use a terminal/sentinel node for all the problems **_where the original list head may not be the new list head_**. This really simplifies the control flow.
 
 For example, when inserting a new node before a target node in a list, two cases need to be dealt separately:
 1. If the target node is NOT the list head, the new node's `next` pointer needs to point to the target node while the `next` pointer of the target node's previous node needs to point to the new node
@@ -121,34 +166,32 @@ node_ptr insert_before(node_type head, node_type target, node_type node):
  1  if target == head:
  2      node.next = head
  3      return node
- 4  ptr = head
- 5  while (ptr != NULL and ptr.next != target):
- 6      ptr = ptr.next
- 7  ptr.next = node
- 8  node.next = target
- 9  return head
+ 4  before_target = head
+ 5  while (before_target != NULL and before_target.next != target):
+ 6      before_target = before_target.next
+ 7  insert_after(before_target, node)
+ 8  return head
 ```
 
-Compare the above with the following code with a dummy node that is set up as the node previous to the list head: 
+Compare the above (lines 1-4) with the following code (lines 1-3) with a dummy node that is set up as the node previous to the list head: 
 ```python
 node_ptr insert_before(node_type head, node_type target, node_type node):
  1  pre_head = new node_type
  2  pre_head.next = head
- 3  ptr = pre_head
- 5  while (ptr != NULL and ptr.next != target):
- 6      ptr = ptr.next
- 7  ptr.next = node
- 8  node.next = target
- 9  return pre_head.next
+ 3  before_target = pre_head
+ 4  while (before_target != NULL and before_target.next != target):
+ 5      before_target = before_target.next
+ 6  insert_after(before_target, node)
+ 7  return pre_head.next
 ```
 
-**Important Tip 2:** In most of the problems, the key is to not just have a reference/pointer to the node of interest but also to its predecessor node. The clean way to achieve this is to look ahead by one node.
+**Tip 2:** In most of the problems, the key is to have a reference/pointer to the node before the node of interest. A clean way to achieve this is to look ahead by one node. So, prefer this
 ```python
 node = pre_head // node.next = head
 while (node != NULL and node.next != target_node)
     node = node.next
 ```
-instead of doing
+over
 ```python
 prev_node = pre_head
 node = head
@@ -158,16 +201,9 @@ while (node != NULL and node != target_node)
 ```
 
 ### Insert an element into a list <a name="insert"></a>
-**Variants:**
-1. Insert a key before a node
-   * Find the **_node before the target node_** and **_use a dummy_** head because the new head may be different than the old head
-1. Insert a key after a node
-   * Find the target node but **_no need to use a dummy head_** because the new head will be the same as the old head
-1. Insert a key in a sorted list
-   * Find the node before the first node whose key is **_not less than_** `key` and use a dummy head
 
-#### Insert a key before a node
-The **while**-loop condition in line 4 compares `node.next` with `target`. Contrast this with the **while**-loop in the `insert_after()` method further below where `node` and not `node.next` is compared with `target`. Lines `1-3` set up the dummy head and initializes the `node` iterator to point to it. Lines `8-9` insert the new node created in lines 6-7 with the key `key`.
+#### Variant 1: Insert a key/node before a node
+Find the **_node before the target node_**.
 ```python
 node_ptr insert_before(node_type head, node_type target, key_type key):
  1  pre_head = new node_type
@@ -175,30 +211,12 @@ node_ptr insert_before(node_type head, node_type target, key_type key):
  3  node = pre_head
  4  while (node != NULL and node.next != target):
  5      node = node.next
- 6  if (node != NULL):
- 7      new_node = new node_type
- 8      new_node.key = key
- 9      node.next = new_node
-10      new_node.next = target
-11  return pre_head.next
-```
-#### Insert a key after a node
-Note the signature of `insert_after()`. It does not return anything. If it is needed to return `node_type`, just return `head`.
-```python
-void insert_after(node_type head, node_type target, key_type key):
- 1  node = head
- 2  while (node != NULL and node != target):
- 3      node = node.next
- 4  if (node != NULL):
- 5      new_node = new node_type
- 6      new_node.key = key
- 7      next_node = node.next
- 8      node.next = new_node
- 9      new_node.next = next_node
+ 6  insert_after(node, key)
+ 7  return pre_head.next
 ```
 
-#### Insert a key in a sorted list
-This is same as `insert_before()` above except for the second part of the **while**-loop condition on line 4 where the key is compared instead of the node itself.
+#### Variant 2: Insert a key in a sorted list
+Find the node before the first node whose key is **_not less than_** `key`. This is same as `insert_before()` above except for the second part of the **while**-loop condition on line 4 where the node key is compared instead of the node itself
 ```python
 node_ptr insert_key(node_type head, key_type key):
  1  pre_head = new node_type
@@ -206,13 +224,8 @@ node_ptr insert_key(node_type head, key_type key):
  3  node = pre_head
  4  while (node != NULL and node.next.key > key):
  5      node = node.next
- 6  if (node != NULL):
- 7      new_node = new node_type
- 8      new_node.key = key
- 9      next_node = node.next
-10      node.next = new_node
-11      new_node.next = next_node
-12  return pre_head.next
+ 6  insert_after(node, key)
+ 7  return pre_head.next
 ```
 
 ### Delete list element(s) <a name="delete"></a>
@@ -223,18 +236,28 @@ node_ptr insert_key(node_type head, key_type key):
 1. Remove the `k`-th node from the list
 1. Remove the middle node from a list
 1. Remove the `k`-th last node from the list
-1. Remove multiple elements from a list
 
-Again, similar to `insert_after()`, `delete_after()` does not return anything. If it is needed to return `node_type`, just return `head`.
+#### Variant: Remove multiple elements from a list
+Remove all the nodes from a list whose keys match a specified key.
 ```python
-void delete_after(node_type head, node_type target):
- 1  node = head
- 2  while (node != NULL and node != target):
- 3      node = node.next
- 4  if (node != NULL and node.next != NULL):
- 6      target = node.next
- 7      node.next = node.next.next
- 8      delete target
+node_ptr delete_all_keys(node_type head, key_type key):
+ 1  pre_head = new node_type
+ 2  pre_head.next = head
+ 3  node = pre_head
+ 4  while (node != NULL):
+ 5      if (node != NULL and node.next != NULL and node.next.key == key):
+ 6          delete_after(node)
+ 7      node = node.next
+ 8  return pre_head.next
+```
+
+The alternative way to structure the **while**-loop in lines 4-7 is a nested **while**-loop, where the inner loop skips all the nodes whose keys do not match the specified `key`:
+```python
+ 4  while (node != NULL):
+ 5      while (node != NULL and node.next != NULL and node.next.key != key):
+ 6          node = node.next
+ 7      delete_after(node)
+ 8      node = node.next
 ```
 
 ### Reverse a list <a name="reverse"></a>
@@ -245,10 +268,9 @@ node_type reverse(node_type head)
  2  pre_head.next = NULL
  3  while (head != NULL):
  4      head_next = head.next
- 5      head.next = pre_head.next
- 6      pre_head.next = head
- 7      head = head_next
- 8  return dummy_head.next
+ 5      insert_after(node, head)
+ 6      head = head_next
+ 7  return dummy_head.next
 ```
 
 #### Variant: Reverse a sublist
@@ -263,17 +285,17 @@ node_type reverse(node_type head, node_type first, node_type last)
  5      head = head.next
  6  while (head != NULL and head != last):
  7      head_next = head.next
- 8      head.next = pre_head.next
- 9      pre_head.next = head
-10      head = head_next
-11  if (first != NULL):
+ 8      insert_after(node, head)
+ 9      head = head_next
+10  if (first != NULL):
 12      first.next = head
 13  return dummy_head.next
 ```
-It can be verified that the above algorithm takes care of all the edge cases
+It can be verified that the above algorithm takes care of all the following edge cases:
 1. Empty range, `[node, node)`, including `[NULL, NULL)`
 1. Any node to the end of the list, `[node, NULL)`
 1. Entire list, `[head, NULL)`
+1. Empty list, i.e., `head` is `NULL`
 
 If the range is expressed as `[first, last]` instead, replace the **while**-loop condition on line 6 above with:
 ```python
