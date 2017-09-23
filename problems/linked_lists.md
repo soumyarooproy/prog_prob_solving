@@ -9,6 +9,9 @@
    1. [Find the `k`-th last node from the list](#find_kth_last)
    1. [Determine if a list has a cycle](#is_cycle)
    1. [Determine if two lists intersect](#is_intersecting)
+   1. [Find the first mismatching nodes between two lists](#mismatch)
+   1. [Compare two lists](#compare)
+   1. [Determine if a list is a sublist of another](#sublist)
 1. [Write/Modify Problems](#wr_problems)
    1. [Fundamental Modify Operations](#fundamental_ops)
    1. [Important Tips](#important_tips)
@@ -24,6 +27,7 @@
    1. [Interleave two lists](#interleave)
    1. [Split a list into two lists](#split)
    1. [Partition a list](#partition)
+   1. [Sort a list](#sort)
 1. [Copy Problems](#cp_problems)
    1. [Deep clone a list](#clone)
    1. [Increment arbitrary length number](#increment)
@@ -107,6 +111,28 @@ Steps:
 1. If they become equal before becoming NULL, the lists intersect; otherwise, not
 
 #### Variant: What if there is a cycle?
+
+### Find the first mismatching nodes between two lists <a name="mismatch"></a>
+```python
+(node_type, node_type) mismatch(node_type head1, node_type head2):
+ 1  while (head1 != NULL and head2 != NULL and head1.key == head2.key):
+ 2      head1 = head1.next
+ 3      head2 = head2.next
+ 4  return (head1, head2)
+```
+
+### Compare two lists <a name="compare"></a>
+```python
+bool compare(node_type head1, node_type head2):
+ 1  (end1, end2) = mismatch(head1, head2)
+ 2  return end1 == NULL and end2 == NULL
+```
+
+### Determine if a list is a sublist of another <a name="sublist"></a>
+```python
+bool includes(node_type head1, node_type head2):
+...
+```
 
 ## Write/Modify Problems <a name="wr_problems"></a>
 In this class of problems, the input list is modified.
@@ -263,7 +289,7 @@ The alternative way to structure the **while**-loop in lines 4-7 is a nested **w
 ### Reverse a list <a name="reverse"></a>
 For this problem, think of reversing a sequence using a stack. Push each element in the sequence into a stack. The first element in the sequence is at the bottom of the stack while the last element in the sequence is at the top of the stack.
 ```python
-node_type reverse(node_type head)
+node_type reverse(node_type head):
  1  pre_head = new node_type
  2  pre_head.next = NULL
  3  while (head != NULL):
@@ -272,12 +298,30 @@ node_type reverse(node_type head)
  6      head = head_next
  7  return dummy_head.next
 ```
+Reversal can also be done recursively, using the following recursive relation:
+```
+reverse([0, n)) = reverse([1, n)).append({0})
+```
+Following is the pseudocode for it. Note that the recursive function returns the list tail along with the list head.
+```python
+node_type reverse(node_type head):
+ 1  head, tail = reverse_recursive(head)
+ 2. tail.next = NULL
+ 3. return head
+ 
+(node_type, node_type) reverse_recursive(node_type head):
+ 1  if (head.next == NULL):
+ 2      return head, head
+ 3  (rhead, rtail) = reverse_recursive(head.next)
+ 4  insert_after(rtail, head)
+ 5  return rhead
+```
 
 #### Variant: Reverse a sublist
 Reverse the sublist specified by the range `[first, last)` in a list. This is a more general case of the problem above in that the pushing of elements into the stack needs to be deferred till the `first` node is found (**while**-loop on lines 4-5 below) in the list and should stop (**while**-loop condition on line 6 below) at the node before the `last` node.
 
 ```python
-node_type reverse(node_type head, node_type first, node_type last)
+node_type reverse(node_type head, node_type first, node_type last):
  1  pre_head = new node_type
  2  pre_head.next = head
  3  head = pre_head
@@ -316,7 +360,31 @@ Steps:
 ### Remove duplicate items from a list <a name="remove_dups"></a>
 
 ### Rotate a list <a name="rotate"></a>
-By `0 < k < n`, `n` is the length of the list, nodes
+Rotate a list left by `k` nodes, `0 < k < n`, `n` is the length of the list.
+
+Steps:
+1. Find the node before the `k`-th node, say `prev_k`, and the list tail, `tail`, in a single pass (`prev_k != tail` because `k < n`)
+2. Set the `next` field of the `tail` to the list head
+3. Set the `next` field of the `prev_kth` to NULL
+4. Return the `k`-th node as the new head
+
+```python
+node_type rotate_left(node_type head, int k):
+ 1  pre_head = new node_type
+ 2  pre_head.next = head
+ 3  prev_kth = pre_head
+ 4  count = 0
+ 5  while (count < k):
+ 6      count = count + 1
+ 7      prev_kth = prev_kth.next
+ 8  tail = prev_kth
+ 9  while (tail.next != NULL)
+10      tail = tail.next
+11  tail.next = head
+12  pre_head.next = prev_kth.next
+13  prev_kth.next = NULL
+14  return pre_head.next
+```
 
 #### Variant: `0 < k`
 Steps:
@@ -336,6 +404,8 @@ Steps:
 One with odd numbered nodes and the other with the rest of the nodes
 
 ### Partition a list <a name="partition"></a>
+
+### Sort a list <a name="sort"></a>
 
 ## Copy Problems <a name="cp_problems"></a>
 
