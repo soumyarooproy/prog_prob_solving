@@ -145,7 +145,7 @@ The following are fundamental singly-linked list operations, which serve as buil
 ```python
 void insert_after(node_type target, node_type new_node):
  1  if (target != NULL):
- 2      node = target.next
+ 2      next_target = target.next
  3      target.next = new_node
  4      new_node.next = next_target
 ```
@@ -293,9 +293,9 @@ node_type reverse(node_type head):
  1  pre_head = new node_type
  2  pre_head.next = NULL
  3  while (head != NULL):
- 4      head_next = head.next
+ 4      next_head = head.next
  5      insert_after(node, head)
- 6      head = head_next
+ 6      head = next_head
  7  return dummy_head.next
 ```
 Reversal can also be done recursively, using the following recursive relation:
@@ -325,15 +325,16 @@ node_type reverse(node_type head, node_type first, node_type last):
  1  pre_head = new node_type
  2  pre_head.next = head
  3  head = pre_head
- 4  while (head != NULL and head.next != first)
+ 4  while (head != NULL and head.next != first):
  5      head = head.next
- 6  while (head != NULL and head != last):
- 7      head_next = head.next
- 8      insert_after(node, head)
- 9      head = head_next
-10  if (first != NULL):
+ 6  tail = head
+ 7  while (head != NULL and head != last):
+ 8      next_head = head.next
+ 9      insert_after(tail, head)
+10      head = next_head
+11  if (first != NULL):
 12      first.next = head
-13  return dummy_head.next
+13  return pre_head.next
 ```
 It can be verified that the above algorithm takes care of all the following edge cases:
 1. Empty range, `[node, node)`, including `[NULL, NULL)`
@@ -397,7 +398,34 @@ Steps:
 #### Variant: Splice part of a list in another list
 
 ### Merge two sorted lists <a name="merge"></a>
-
+```python
+node_type merge(node_type head1, node_type head2):
+ 1  pre_new_head = new node_type
+ 2  pre_new_head.key = key
+ 3  while (head1 != NULL and head2 != NULL):
+ 4      if (head1.key <= head2.key)
+ 5          tail.next = head1
+ 6      else
+ 7          tail.next = head2
+ 8  if (head1 == NULL)
+ 9      tail.next = head2
+10  else
+11      tail.next = head1
+12  pre_new_head.next
+```
+Recursive approach:
+```python
+node_type merge(node_type head1, node_type head2):
+ 1  if (head1 != NULL)
+ 2      return head2
+ 3  if (head2 != NULL)
+ 4      return head1
+ 5  if (head1.key <= head2.key)
+ 6      head1.next = merge(head1.next, head2)
+ 7      return head1
+ 8  head2.next = merge(head1, head2.next)
+ 9  return head2
+```
 ### Interleave two lists <a name="interleave"></a>
 
 ### Split a list into two lists <a name="split"></a>
