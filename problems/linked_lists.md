@@ -402,23 +402,27 @@ Steps:
 node_type merge(node_type head1, node_type head2):
  1  pre_new_head = new node_type
  2  pre_new_head.key = key
- 3  while (head1 != NULL and head2 != NULL):
- 4      if (head1.key <= head2.key)
- 5          tail.next = head1
- 6      else
- 7          tail.next = head2
- 8  if (head1 == NULL)
- 9      tail.next = head2
-10  else
-11      tail.next = head1
-12  pre_new_head.next
+ 3  tail = pre_new_head
+ 4  while (head1 != NULL and head2 != NULL):
+ 5      if (head1.key <= head2.key)
+ 6          tail.next = head1
+ 7          head1 = head1.next
+ 8      else
+ 9          tail.next = head2
+10          head2 = head2.next
+11      tail = tail.next
+12  if (head1 == NULL)
+13      tail.next = head2
+14  else
+15      tail.next = head1
+16  return pre_new_head.next
 ```
 Recursive approach:
 ```python
 node_type merge(node_type head1, node_type head2):
- 1  if (head1 != NULL)
+ 1  if (head1 == NULL)
  2      return head2
- 3  if (head2 != NULL)
+ 3  if (head2 == NULL)
  4      return head1
  5  if (head1.key <= head2.key)
  6      head1.next = merge(head1.next, head2)
