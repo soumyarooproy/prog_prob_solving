@@ -140,16 +140,14 @@ In this class of problems, the input list is modified.
 ### Fundamental Modify Operations <a name="fundamental_ops"></a>
 The following are fundamental singly-linked list operations, which serve as building blocks for almost all the problems.
 
-
 #### Insert a new node after a target node
 ```python
 void insert_after(node_type target, node_type new_node):
- 1  if (target != NULL):
- 2      next_target = target.next
- 3      target.next = new_node
- 4      new_node.next = next_target
+ 1  next_target = target.next
+ 2  target.next = new_node
+ 3  new_node.next = next_target
 ```
-**Note:** The function above does not insert the new node if `target` is `NULL`
+**Note:** The function above assumes that both `target` and `new_node` are not `NULL`.
 
 The above function can be used to insert a new node with a specified key after a target node:
 ```python
@@ -159,30 +157,24 @@ void insert_after(node_type target, key_type key):
  3  insert_after(target, new_node)
 ```
 
-#### Delete a node after a target node
-This operation removes a node after the target node leaving the resulting list to have one fewer node than the original list.
-```python
-void delete_after(node_type target):
- 1  if (target != NULL and target.next != NULL):
- 2      next_target = target.next
- 3      target.next = target.next.next
- 4      delete next_target
-```
-**Notes:**
-* In managed code, line 4 is unnecessary
-* This method does not allow removing the list head out of the box. To be able to do that, simply create a dummy node, `pre_head`, set it up to point to the list head (refer to **Tip 1** below), and pass that as `target` as the method argument
-
-**Note:** Similar to the insert function, no node is deleted if `target` is `NULL`
-
 #### Extract a node after a target node
+This operation extracts the node after the target node leaving the resulting list to have one fewer node than the original list and returns the extracted node:
 ```python
 node_type extract_after(node_type target):
- 1  if (target != NULL and target.next != NULL):
- 2      next_target = target.next
- 3      target.next = target.next.next
- 4  return next_target
+ 1  next_target = target.next
+ 2  target.next = target.next.next
+ 3  return next_target
 ```
-**Note:** Again, no node is extracted if `target` is `NULL`. Further, the extracted node's `next` pointer, if applicable, is undefined.
+**Notes:**
+* Similar to `insert_after()`, this method also assumes that `target` is not `NULL`. Further, the extracted node's `next` pointer, if applicable, should be overwritten by the caller
+* This method does not allow extracting the list head out of the box. To be able to do that, simply create a dummy node, `pre_head`, set it up to point to the list head (refer to **Tip 1** below), and pass that as `target` as the method argument
+
+#### Delete a node after a target node
+Explicit deletion of a node is only applicable (and very important) in unmanaged languages, such as C/C++. Managed languages such as Java, C#, Python, etc., perform garbage collection to reclaim allocated but unreferenced memory. 
+```python
+void delete_after(node_type target):
+ 1  delete extract_after(target)
+```
 
 ### Important Tips <a name="important_tips"></a>
 **Tip 1:** Use a terminal/sentinel node for all the problems **_where the original list head may not be the new list head_**. This really simplifies the control flow.
