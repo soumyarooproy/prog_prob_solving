@@ -17,12 +17,14 @@
    1. [Important Tips](#important_tips)
    1. [Insert an element into a list](#insert)
    1. [Delete list element(s)](#delete)
+      1. [Variant 1: Remove multiple elements from a list](#remove_multiple)
+      1. [Variant 2: Deduplicate (uniquify successively repeating elements in) a list](#uniquify)
+      1. [Variant 3: Remove duplicate items from a list](#remove_dups)
    1. [Reverse a list](#reverse)
    1. [Determine if a list is palindromic](#palindrome)
    1. [Uniquify the successively repeating elements in a list](#uniquify)
    1. [Remove duplicate items from a list](#remove_dups)
    1. [Rotate a list](#rotate)
-   1. [Splice a list in another list](#splice)
    1. [Merge two sorted lists](#merge)
    1. [Interleave two lists](#interleave)
    1. [Split a list into two lists](#split)
@@ -157,6 +159,15 @@ void insert_after(node_type target, key_type key):
  3  insert_after(target, new_node)
 ```
 
+### Splice a list after a target node
+Add a non-empty list, specified by range `[head, tail]`, after a target node in another list:
+```python
+node_ptr splice_after(node_type target, node_type head, node_type tail):
+ 1  next_target = target.next
+ 2  target.next = head
+ 3. tail.next = next_target
+```
+
 #### Extract a node after a target node
 This operation extracts the node after the target node leaving the resulting list to have one fewer node than the original list and returns the extracted node:
 ```python
@@ -252,15 +263,17 @@ node_ptr insert_key(node_type head, key_type key):
 ```
 
 ### Delete list element(s) <a name="delete"></a>
-#### Variants
+<a name="basic_removals"></a>
+#### Node Removals
+For each of the following list node deletion problems, simply find the node before the target node and call `delete_after()` on it:
 1. Delete a node
 1. Delete a node with a key
-1. Delete a node with a key in a sorted list
 1. Remove the `k`-th node from the list
 1. Remove the middle node from a list
 1. Remove the `k`-th last node from the list
 
-#### Variant: Remove multiple elements from a list
+<a name="remove_multiple"></a>
+#### Variant 1: Remove multiple elements from a list
 Remove all the nodes from a list whose keys match a specified key.
 ```python
 node_ptr delete_all_keys(node_type head, key_type key):
@@ -281,6 +294,49 @@ The alternative way to structure the **while**-loop in lines 4-7 is a nested **w
  6          node = node.next
  7      delete_after(node)
  8      node = node.next
+```
+
+#### Variant 2: Deduplicate (uniquify successively repeating elements in) a list <a name="uniquify"></a>
+**Notes:**
+* If the list is sorted, it uniquifies the entire list.
+* In this problem and its variant below, it is important to actually delete the duplicate nodes in unmanaged code. Otherwise, it may lead to memory leaks. In managed code, there may be simpler algorithms that may work just as well as the algorithms below.
+
+In this problem, the old head is guaranteed to be the new head (because the first element is always in the final list). Following is the pseudocode for it, assuming that `head` is the start of a non-empty list:
+```python
+node_type dedup(node_type head):
+ 1  node = head
+ 2  while (node.next != NULL):
+ 3      if (node.next.key == node.key):
+ 4          delete_after(node)
+ 5      else:
+ 6          node = node.next
+ 7  return head;
+```
+
+#### Variant 3: Remove duplicate items from a list <a name="remove_dups"></a>
+This problem is a harder variant of the uniquify/dedup problem above. In this problem, a the original head is not guaranteed to be the new head.
+
+Define the following invariants:
+* `tail` be the last node in the (new) list with only unique elements
+* `tail.next` is the next node whose uniqueness determination is pending
+   * If `tail.next.key != tail.next.next.key`, then `tail.next` is unique and it should be added to the new list (line 6 below)
+   * Otherwise, delete all the consecutive nodes whose keys are the same as `tail.next.key` (lines 8-10 below)
+
+Following is the pseudocode based on these invariants:
+```python
+node_type delete_non_unique(node_type head):
+ 1  pre_head = new node_type
+ 2  pre_head.next = head
+ 3  tail = pre_head
+ 4  while (tail != NULL and tail.next != NULL):
+ 5      if (tail.next.next == NULL or tail.next.next.key != tail.next.key):
+ 6          tail = tail.next
+ 7      else:
+ 8          key = tail.next.key
+ 9          while (tail.next and tail.next.key == key):
+10              delete_after(tail)
+11  tail.next = NULL
+11  return pre_head.next
 ```
 
 ### Reverse a list <a name="reverse"></a>
@@ -345,49 +401,6 @@ If the range is expressed as `[first, last]` instead, replace the **while**-loop
 ```
 **Note:** An empty range may not be specified using inclusive bounds
 
-### Deduplicate (uniquify successively repeating elements in) a list <a name="uniquify"></a>
-**Notes:**
-* If the list is sorted, it uniquifies the entire list.
-* In this problem and its variant below, it is important to actually delete the duplicate nodes in unmanaged code. Otherwise, it may lead to memory leaks. In managed code, there may be simpler algorithms that may work just as well as the algorithms below.
-
-In this problem, the old head is guaranteed to be the new head (because the first element is always in the final list). Following is the pseudocode for it, assuming that `head` is the start of a non-empty list:
-```python
-node_type dedup(node_type head):
- 1  node = head
- 2  while (node.next != NULL):
- 3      if (node.next.key == node.key):
- 4          delete_after(node)
- 5      else:
- 6          node = node.next
- 7  return head;
-```
-
-#### Variant: Remove duplicate items from a list <a name="remove_dups"></a>
-This problem is a harder variant of the uniquify/dedup problem above. In this problem, a the original head is not guaranteed to be the new head.
-
-Define the following invariants:
-* `tail` be the last node in the (new) list with only unique elements
-* `tail.next` is the next node whose uniqueness determination is pending
-   * If `tail.next.key != tail.next.next.key`, then `tail.next` is unique and it should be added to the new list (line 6 below)
-   * Otherwise, delete all the consecutive nodes whose keys are the same as `tail.next.key` (lines 8-10 below)
-
-Following is the pseudocode based on these invariants:
-```python
-node_type delete_non_unique(node_type head):
- 1  pre_head = new node_type
- 2  pre_head.next = head
- 3  tail = pre_head
- 4  while (tail != NULL and tail.next != NULL):
- 5      if (tail.next.next == NULL or tail.next.next.key != tail.next.key):
- 6          tail = tail.next
- 7      else:
- 8          key = tail.next.key
- 9          while (tail.next and tail.next.key == key):
-10              delete_after(tail)
-11  tail.next = NULL
-11  return pre_head.next
-```
-
 ### Rotate a list <a name="rotate"></a>
 Rotate a list left by `k` nodes, `0 < k < n`, `n` is the length of the list.
 
@@ -420,10 +433,6 @@ Steps:
 1. Find the length of the list, `n`
 1. Compute `k` modulo `n`
 1. Rotate the list by `k` nodes
-
-### Splice a list in another list <a name="splice"></a>
-
-#### Variant: Splice part of a list in another list
 
 ### Merge two sorted lists <a name="merge"></a>
 ```python
