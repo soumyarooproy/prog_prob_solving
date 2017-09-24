@@ -14,6 +14,10 @@
    1. [Determine if a list is a sublist of another](#sublist)
 1. [Write/Modify Problems](#wr_problems)
    1. [Fundamental Modify Operations](#fundamental_ops)
+      1. [Insert a new node after a target node](#insert_after)
+      1. [Splice a list after a target node](#splice_after)
+      1. [Extract a node after a target node](#extract_after)
+      1. [Delete a node after a target node](#delete_after)
    1. [Important Tips](#important_tips)
    1. [Insert an element into a list](#insert)
    1. [Delete list element(s)](#delete)
@@ -21,19 +25,19 @@
       1. [Variant 2: Deduplicate (uniquify successively repeating elements in) a list](#uniquify)
       1. [Variant 3: Remove duplicate items from a list](#remove_dups)
    1. [Reverse a list](#reverse)
-   1. [Determine if a list is palindromic](#palindrome)
-   1. [Uniquify the successively repeating elements in a list](#uniquify)
-   1. [Remove duplicate items from a list](#remove_dups)
    1. [Rotate a list](#rotate)
    1. [Merge two sorted lists](#merge)
    1. [Interleave two lists](#interleave)
    1. [Split a list into two lists](#split)
+   1. [Determine if a list is palindromic](#palindrome)
    1. [Partition a list](#partition)
    1. [Sort a list](#sort)
 1. [Copy Problems](#cp_problems)
    1. [Deep clone a list](#clone)
    1. [Increment arbitrary length number](#increment)
    1. [Add two arbitrary length numbers](#add)
+
+---
 
 ## Read-Only Problems <a name="ro_problems"></a>
 In this class of problems, the input list is not modified.
@@ -50,6 +54,8 @@ int find(node_type head):
 6   return count
 ```
 
+---
+
 ### Find an element in a list <a name="find_element"></a>
 Just iterate through the list looking for the element:
 ```python
@@ -61,6 +67,8 @@ node_type find(node_type head, key_type key):
 5       node = node.next
 6   return NULL
 ```
+
+---
 
 ### Find the `k`-th node in the list <a name="find_kth"></a>
 Advance `k` nodes in the list:
@@ -74,6 +82,8 @@ node_type find_kth(node_type head, int k):
 6   return node
 ```
 
+---
+
 ### Find the middle node of a list <a name="find_middle"></a>
 Use `slow` and `fast` iterators such that the `fast` iterator moves at twice the speed of the `slow` iterator:
 ```python
@@ -84,6 +94,8 @@ node_type find_mid(node_type head):
 4       fast = fast.next.next
 5   return slow
 ```
+
+---
 
 ### Find the `k`-th last node from the list <a name="find_kth_last"></a>
 Use `leader` and `follower` iterators such that 'leader' iterator is `k` nodes ahead of `follower` iterator:
@@ -101,9 +113,13 @@ node_type find_kth_last(node_type head, int k):
 10  return follower
 ```
 
+---
+
 ### Determine if a list has a cycle <a name="is_cycle"></a>
 
 #### Variant: Find the intersecting node
+
+---
 
 ### Determine if two lists intersect/overlap <a name="is_intersecting"></a>
 Steps:
@@ -114,6 +130,8 @@ Steps:
 
 #### Variant: What if there is a cycle?
 
+---
+
 ### Find the first mismatching nodes between two lists <a name="mismatch"></a>
 ```python
 (node_type, node_type) mismatch(node_type head1, node_type head2):
@@ -123,6 +141,8 @@ Steps:
  4  return (head1, head2)
 ```
 
+---
+
 ### Compare two lists <a name="compare"></a>
 ```python
 bool compare(node_type head1, node_type head2):
@@ -130,11 +150,15 @@ bool compare(node_type head1, node_type head2):
  2  return end1 == NULL and end2 == NULL
 ```
 
+---
+
 ### Determine if a list is a sublist of another <a name="sublist"></a>
 ```python
 bool includes(node_type head1, node_type head2):
 ...
 ```
+
+---
 
 ## Write/Modify Problems <a name="wr_problems"></a>
 In this class of problems, the input list is modified.
@@ -142,6 +166,7 @@ In this class of problems, the input list is modified.
 ### Fundamental Modify Operations <a name="fundamental_ops"></a>
 The following are fundamental singly-linked list operations, which serve as building blocks for almost all the problems.
 
+<a name="insert_after"></a>
 #### Insert a new node after a target node
 ```python
 void insert_after(node_type target, node_type new_node):
@@ -159,7 +184,8 @@ void insert_after(node_type target, key_type key):
  3  insert_after(target, new_node)
 ```
 
-### Splice a list after a target node
+<a name="splice_after"></a>
+#### Splice a list after a target node
 Add a non-empty list, specified by range `[head, tail]`, after a target node in another list:
 ```python
 node_ptr splice_after(node_type target, node_type head, node_type tail):
@@ -168,6 +194,7 @@ node_ptr splice_after(node_type target, node_type head, node_type tail):
  3. tail.next = next_target
 ```
 
+<a name="extract_after"></a>
 #### Extract a node after a target node
 This operation extracts the node after the target node leaving the resulting list to have one fewer node than the original list and returns the extracted node:
 ```python
@@ -180,12 +207,15 @@ node_type extract_after(node_type target):
 * Similar to `insert_after()`, this method also assumes that `target` is not `NULL`. Further, the extracted node's `next` pointer, if applicable, should be overwritten by the caller
 * This method does not allow extracting the list head out of the box. To be able to do that, simply create a dummy node, `pre_head`, set it up to point to the list head (refer to **Tip 1** below), and pass that as `target` as the method argument
 
+<a name="delete_after"></a>
 #### Delete a node after a target node
 Explicit deletion of a node is only applicable (and very important) in unmanaged languages, such as C/C++. Managed languages such as Java, C#, Python, etc., perform garbage collection to reclaim allocated but unreferenced memory. 
 ```python
 void delete_after(node_type target):
  1  delete extract_after(target)
 ```
+
+---
 
 ### Important Tips <a name="important_tips"></a>
 **Tip 1:** Use a terminal/sentinel node for all the problems **_where the original list head may not be the new list head_**. This really simplifies the control flow.
@@ -234,6 +264,8 @@ while (node != NULL and node != target_node)
     prev_node = prev_node.next
 ```
 
+---
+
 ### Insert an element into a list <a name="insert"></a>
 
 #### Variant 1: Insert a key/node before a node
@@ -261,6 +293,8 @@ node_ptr insert_key(node_type head, key_type key):
  6  insert_after(node, key)
  7  return pre_head.next
 ```
+
+---
 
 ### Delete list element(s) <a name="delete"></a>
 <a name="basic_removals"></a>
@@ -339,6 +373,8 @@ node_type delete_non_unique(node_type head):
 11  return pre_head.next
 ```
 
+---
+
 ### Reverse a list <a name="reverse"></a>
 For this problem, think of reversing a sequence using a stack. Push each element in the sequence into a stack. The first element in the sequence is at the bottom of the stack while the last element in the sequence is at the top of the stack.
 ```python
@@ -401,6 +437,8 @@ If the range is expressed as `[first, last]` instead, replace the **while**-loop
 ```
 **Note:** An empty range may not be specified using inclusive bounds
 
+---
+
 ### Rotate a list <a name="rotate"></a>
 Rotate a list left by `k` nodes, `0 < k < n`, `n` is the length of the list.
 
@@ -433,6 +471,8 @@ Steps:
 1. Find the length of the list, `n`
 1. Compute `k` modulo `n`
 1. Rotate the list by `k` nodes
+
+---
 
 ### Merge two sorted lists <a name="merge"></a>
 ```python
@@ -468,10 +508,16 @@ node_type merge(node_type head1, node_type head2):
  9  return head2
 ```
 
+---
+
 ### Interleave two lists <a name="interleave"></a>
+
+---
 
 ### Split a list into two lists <a name="split"></a>
 One with odd numbered nodes and the other with the rest of the nodes
+
+---
 
 ### Determine if a list is palindromic <a name="palindrome"></a>
 Steps:
@@ -480,17 +526,26 @@ Steps:
 1. Compare the two halves of the list
 1. Reverse the second-half of the list again to restore the original list
 
+---
+
 ### Partition a list <a name="partition"></a>
 
+---
+
 ### Sort a list <a name="sort"></a>
+
+---
 
 ## Copy Problems <a name="cp_problems"></a>
 
 ### Deep clone a list <a name="clone"></a>
 
+---
+
 ### Increment arbitrary length number <a name="increment"></a>
+
+---
 
 ### Add two arbitrary length numbers <a name="add"></a>
 
-
-
+---
