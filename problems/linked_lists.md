@@ -184,6 +184,8 @@ void insert_after(node_type target, key_type key):
  3  insert_after(target, new_node)
 ```
 
+---
+
 <a name="splice_after"></a>
 #### Splice a list after a target node
 Add a non-empty list, specified by range `[head, tail]`, after a target node in another list:
@@ -193,6 +195,8 @@ node_ptr splice_after(node_type target, node_type head, node_type tail):
  2  target.next = head
  3. tail.next = next_target
 ```
+
+---
 
 <a name="extract_after"></a>
 #### Extract a node after a target node
@@ -206,6 +210,8 @@ node_type extract_after(node_type target):
 **Notes:**
 * Similar to `insert_after()`, this method also assumes that `target` is not `NULL`. Further, the extracted node's `next` pointer, if applicable, should be overwritten by the caller
 * This method does not allow extracting the list head out of the box. To be able to do that, simply create a dummy node, `pre_head`, set it up to point to the list head (refer to **Tip 1** below), and pass that as `target` as the method argument
+
+---
 
 <a name="delete_after"></a>
 #### Delete a node after a target node
@@ -248,6 +254,8 @@ node_ptr insert_before(node_type head, node_type target, node_type node):
  6  insert_after(before_target, node)
  7  return pre_head.next
 ```
+
+---
 
 **Tip 2:** In most of the problems, the key is to have a reference/pointer to the node before the node of interest. A clean way to achieve this is to look ahead by one node. So, prefer this
 ```python
@@ -306,6 +314,8 @@ For each of the following list node deletion problems, simply find the node befo
 1. Remove the middle node from a list
 1. Remove the `k`-th last node from the list
 
+---
+
 <a name="remove_multiple"></a>
 #### Variant 1: Remove multiple elements from a list
 Remove all the nodes from a list whose keys match a specified key.
@@ -330,10 +340,12 @@ The alternative way to structure the **while**-loop in lines 4-7 is a nested **w
  8      node = node.next
 ```
 
+---
+
 #### Variant 2: Deduplicate (uniquify successively repeating elements in) a list <a name="uniquify"></a>
 **Notes:**
-* If the list is sorted, it uniquifies the entire list.
-* In this problem and its variant below, it is important to actually delete the duplicate nodes in unmanaged code. Otherwise, it may lead to memory leaks. In managed code, there may be simpler algorithms that may work just as well as the algorithms below.
+* If the list is sorted, it uniquifies the entire list
+* In this problem and its variant below, it is important to actually delete the duplicate nodes in unmanaged code. Otherwise, it may lead to memory leaks. In managed code, there may be simpler algorithms that may work just as well as the algorithms below
 
 In this problem, the old head is guaranteed to be the new head (because the first element is always in the final list). Following is the pseudocode for it, assuming that `head` is the start of a non-empty list:
 ```python
@@ -347,14 +359,18 @@ node_type dedup(node_type head):
  7  return head;
 ```
 
+---
+
 #### Variant 3: Remove duplicate items from a list <a name="remove_dups"></a>
 This problem is a harder variant of the uniquify/dedup problem above. In this problem, a the original head is not guaranteed to be the new head.
 
 Define the following invariants:
 * `tail` be the last node in the (new) list with only unique elements
 * `tail.next` is the next node whose uniqueness determination is pending
-   * If `tail.next.key != tail.next.next.key`, then `tail.next` is unique and it should be added to the new list (line 6 below)
-   * Otherwise, delete all the consecutive nodes whose keys are the same as `tail.next.key` (lines 8-10 below)
+
+With `tail` initialized to _before_ `head`, iterate over the list, maintaining these invariants:
+* If `tail.next.key != tail.next.next.key`, then `tail.next` is unique and it should be added to the new list (line 6 below)
+* Otherwise, delete all the consecutive nodes whose keys are the same as `tail.next.key` (lines 8-10 below)
 
 Following is the pseudocode based on these invariants:
 ```python
@@ -406,6 +422,8 @@ node_type reverse(node_type head):
  5  return rhead
 ```
 
+---
+
 #### Variant: Reverse a sublist
 Reverse the sublist specified by the range `[first, last)` in a list. This is a more general case of the problem above in that the pushing of elements into the stack needs to be deferred till the `first` node is found (**while**-loop on lines 4-5 below) in the list and should stop (**while**-loop condition on line 6 below) at the node before the `last` node.
 
@@ -440,13 +458,13 @@ If the range is expressed as `[first, last]` instead, replace the **while**-loop
 ---
 
 ### Rotate a list <a name="rotate"></a>
-Rotate a list left by `k` nodes, `0 < k < n`, `n` is the length of the list.
+Rotate a list left by `k` nodes, `0 <= k < n`, `n` is the length of the list.
 
 Steps:
-1. Find the node before the `k`-th node, say `prev_k`, and the list tail, `tail`, in a single pass (`prev_k != tail` because `k < n`)
-2. Set the `next` field of the `tail` to the list head
-3. Set the `next` field of the `prev_kth` to NULL
-4. Return the `k`-th node as the new head
+1. Find the node before the `k`-th node, say `prev_k`, and the list tail, `tail`, in a single pass (`prev_k != tail` because `k < n`); lines 4-10 below
+1. Save `prev_kth.next` as `kth` and set the `next` field of the `prev_kth` to `NULL`
+1. Splice the sublist `[kth, tail]` to the beginning of the list
+1. Return the `k`-th node as the new head
 
 ```python
 node_type rotate_left(node_type head, int k):
@@ -460,17 +478,18 @@ node_type rotate_left(node_type head, int k):
  8  tail = prev_kth
  9  while (tail.next != NULL)
 10      tail = tail.next
-11  tail.next = head
-12  pre_head.next = prev_kth.next
-13  prev_kth.next = NULL
-14  return pre_head.next
+11  kth = prev_kth.next
+12  prev_kth.next = NULL
+11  splice_after(pre_head, kth, tail)
+13  return pre_head.next
 ```
 
-#### Variant: `0 < k`
+---
+
+#### Variant: `k` can be greater than `n`
 Steps:
 1. Find the length of the list, `n`
-1. Compute `k` modulo `n`
-1. Rotate the list by `k` nodes
+1. Call `rotate_left()` on the list with `k` modulo `n`
 
 ---
 
