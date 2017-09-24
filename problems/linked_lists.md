@@ -160,6 +160,7 @@ void insert_after(node_type target, key_type key):
 ```
 
 #### Delete a node after a target node
+This operation removes a node after the target node leaving the resulting list to have one fewer node than the original list.
 ```python
 void delete_after(node_type target):
  1  if (target != NULL and target.next != NULL):
@@ -167,6 +168,10 @@ void delete_after(node_type target):
  3      target.next = target.next.next
  4      delete next_target
 ```
+**Notes:**
+* In managed code, line 4 is unnecessary
+* This method does not allow removing the list head out of the box. To be able to do that, simply create a dummy node, `pre_head`, set it up to point to the list head (refer to **Tip 1** below), and pass that as `target` as the method argument
+
 **Note:** Similar to the insert function, no node is deleted if `target` is `NULL`
 
 #### Extract a node after a target node
@@ -348,17 +353,48 @@ If the range is expressed as `[first, last]` instead, replace the **while**-loop
 ```
 **Note:** An empty range may not be specified using inclusive bounds
 
-### Determine if a list is palindromic <a name="palindrome"></a>
-Steps:
-1. Find the mid-point of the list
-1. Reverse the second-half of the list
-1. Compare the two halves of the list
-1. Reverse the second-half of the list again to restore the original list
+### Deduplicate (uniquify successively repeating elements in) a list <a name="uniquify"></a>
+**Notes:**
+* If the list is sorted, it uniquifies the entire list.
+* In this problem and its variant below, it is important to actually delete the duplicate nodes in unmanaged code. Otherwise, it may lead to memory leaks. In managed code, there may be simpler algorithms that may work just as well as the algorithms below.
 
-### Uniquify the successively repeating elements in a list <a name="uniquify"></a>
-**_Note that if the list is sorted, it uniquifies the entire list list_**
+In this problem, the old head is guaranteed to be the new head (because the first element is always in the final list). Following is the pseudocode for it, assuming that `head` is the start of a non-empty list:
+```python
+node_type dedup(node_type head):
+ 1  node = head
+ 2  while (node.next != NULL):
+ 3      if (node.next.key == node.key):
+ 4          delete_after(node)
+ 5      else:
+ 6          node = node.next
+ 7  return head;
+```
 
-### Remove duplicate items from a list <a name="remove_dups"></a>
+#### Variant: Remove duplicate items from a list <a name="remove_dups"></a>
+This problem is a harder variant of the uniquify/dedup problem above. In this problem, a the original head is not guaranteed to be the new head.
+
+Define the following invariants:
+* `tail` be the last node in the (new) list with only unique elements
+* `tail.next` is the next node whose uniqueness determination is pending
+   * If `tail.next.key != tail.next.next.key`, then `tail.next` is unique and it should be added to the new list (line 6 below)
+   * Otherwise, delete all the consecutive nodes whose keys are the same as `tail.next.key` (lines 8-10 below)
+
+Following is the pseudocode based on these invariants:
+```python
+node_type delete_non_unique(node_type head):
+ 1  pre_head = new node_type
+ 2  pre_head.next = head
+ 3  tail = pre_head
+ 4  while (tail != NULL and tail.next != NULL):
+ 5      if (tail.next.next == NULL or tail.next.next.key != tail.next.key):
+ 6          tail = tail.next
+ 7      else:
+ 8          key = tail.next.key
+ 9          while (tail.next and tail.next.key == key):
+10              delete_after(tail)
+11  tail.next = NULL
+11  return pre_head.next
+```
 
 ### Rotate a list <a name="rotate"></a>
 Rotate a list left by `k` nodes, `0 < k < n`, `n` is the length of the list.
@@ -430,10 +466,18 @@ node_type merge(node_type head1, node_type head2):
  8  head2.next = merge(head1, head2.next)
  9  return head2
 ```
+
 ### Interleave two lists <a name="interleave"></a>
 
 ### Split a list into two lists <a name="split"></a>
 One with odd numbered nodes and the other with the rest of the nodes
+
+### Determine if a list is palindromic <a name="palindrome"></a>
+Steps:
+1. Find the mid-point of the list
+1. Reverse the second-half of the list
+1. Compare the two halves of the list
+1. Reverse the second-half of the list again to restore the original list
 
 ### Partition a list <a name="partition"></a>
 
