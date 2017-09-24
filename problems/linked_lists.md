@@ -362,7 +362,7 @@ node_type dedup(node_type head):
 ---
 
 #### Variant 3: Remove duplicate items from a list <a name="remove_dups"></a>
-This problem is a harder variant of the uniquify/dedup problem above. In this problem, a the original head is not guaranteed to be the new head.
+This problem is a harder variant of the uniquify/dedup problem above. In this problem, any key that appears twice or more number of times consecutively should be removed from the final list. Note that, in contrast to the dedup problem, the original head is not guaranteed to be the new head.
 
 Define the following invariants:
 * `tail` be the last node in the (new) list with only unique elements
@@ -410,16 +410,22 @@ reverse([0, n)) = reverse([1, n)).append({0})
 Following is the pseudocode for it. Note that the recursive function returns the list tail along with the list head.
 ```python
 node_type reverse(node_type head):
- 1  head, tail = reverse_recursive(head)
- 2. tail.next = NULL
- 3. return head
+ 1  (head, tail) = reverse_recursive(head)
+ 2. return head
  
 (node_type, node_type) reverse_recursive(node_type head):
  1  if (head.next == NULL):
- 2      return head, head
+ 2      return (head, head)
  3  (rhead, rtail) = reverse_recursive(head.next)
  4  insert_after(rtail, head)
- 5  return rhead
+ 5  return (rhead, head)
+```
+While the above works perfectly well, the `insert_after()` call could be inlined and simplified because `head` is just being appended to the end of the reversed sublist ending in `rtail`. Here's the resulting equivalence of line 4 above:
+```python
+...
+4  rtail.next = head
+5  head.next = NULL
+...
 ```
 
 ---
