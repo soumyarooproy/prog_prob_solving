@@ -7,8 +7,8 @@
    1. [Find the `k`-th node in the list](#find_kth)
    1. [Find the middle node of a list](#find_middle)
    1. [Find the `k`-th last node from the list](#find_kth_last)
-   1. [Determine if a list has a cycle](#is_cycle)
-   1. [Determine if two lists intersect](#is_intersecting)
+   1. [Determine if a list has a cycle](#has_cycle)
+   1. [Determine if two lists intersect](#intersect)
    1. [Find the first mismatching nodes between two lists](#mismatch)
    1. [Compare two lists](#compare)
    1. [Determine if a list is a sublist of another](#sublist)
@@ -28,6 +28,7 @@
    1. [Rotate a list](#rotate)
    1. [Merge two sorted lists](#merge)
    1. [Interleave two lists](#interleave)
+   1. [Fold a list](#fold)
    1. [Split a list into two lists](#split)
    1. [Determine if a list is palindromic](#palindrome)
    1. [Partition a list](#partition)
@@ -37,6 +38,28 @@
    1. [Increment arbitrary length number](#increment)
    1. [Add two arbitrary length numbers](#add)
 
+---
+
+## Summary
+Problem | Description | Online | Solution | Time | Space
+--- | --- | --- | --- | --- | ---
+Remove `k`th last node | Remove `k`th last node from the end of the list | [Leetcode](https://leetcode.com/problems/remove-nth-node-from-end-of-list) | [Solution](#delete) | `O(n)` | `O(1)`
+Swap nodes in pairs | Swap Nodes in Pairs | [Leetcode](https://leetcode.com/problems/swap-nodes-in-pairs) | [Solution](#swap_pair) | `O(n)` | `O(1)`
+Rotate list | Rotate list right by `k` nodes | [Leetcode](https://leetcode.com/problems/rotate-list) | [Solution](#rotate) | `O(n)` | `O(1)`
+Deduplicate | Uniquify successively repeating elements | [Leetcode](https://leetcode.com/problems/remove-duplicates-from-sorted-list) | [Solution](#uniquify) | `O(n)` | `O(1)`
+Remove items that repeat | Remove duplicate items | [Leetcode](https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii) | [Solution](#remove_dups) | `O(n)` | `O(1)`
+Reverse List | Swap Nodes in Pairs | [Leetcode](https://leetcode.com/problems/reverse-linked-list) | [Solution](#reverse) | `O(n)` | `O(1)`
+Reverse a sublist | Swap Nodes in Pairs | [Leetcode](https://leetcode.com/problems/reverse-linked-list-ii) | [Solution](#reverse) | `O(n)` | `O(1)`
+Reverse nodes in `k`-group | Reverse each of the `k` node-long sublists | [Leetcode](https://leetcode.com/problems/reverse-nodes-in-k-group) | [Solution](#reverse_k_group) | `O(n)` | `O(1)`
+Detect if a linked list has a cycle | Detect if a linked list has a cycle | [Leetcode](https://leetcode.com/problems/linked-list-cycle) | [Solution](#has_cycle) | `O(n)` | `O(1)`
+Find the start of the linked list cycle | Reverse each of the `k` node-long sublists | [Leetcode](https://leetcode.com/problems/linked-list-cycle-ii) | [Solution](#has_cycle) | `O(n)` | `O(1)`
+Fold a list | Reverse each of the `k` node-long sublists | [Leetcode](https://leetcode.com/problems/reorder-list) | [Solution](#fold) | `O(n)` | `O(1)`
+Determine if two lists intersect/overlap | Determine if two lists intersect/overlap | [Leetcode](https://leetcode.com/problems/intersection-of-two-linked-lists) | [Solution](#intersect) | `O(n)` | `O(1)`
+Interleave a list | Group the odd numbered nodes followed by the even numbered nodes | [Leetcode](https://leetcode.com/problems/odd-even-linked-list) | [Solution](#interleave) | `O(n)` | `O(1)`
+Determine if a list if palindomic | Determine if a list if palindomic | [Leetcode](https://leetcode.com/problems/palindrome-linked-list) | [Solution](#palindrome) | `O(n)` | `O(1)`
+Delete a non-tail node | Delete a node except for the tail in constant time | [Leetcode](https://leetcode.com/problems/delete-node-in-a-linked-list) | [Solution](#delete_non_tail) | `O(1)` | `O(1)`
+Sort a list | Sort in place | [Leetcode](https://leetcode.com/problems/sort-list) | [Solution](#sort) | `O(n lg n)` | `O(1)`
+Perform insertion sort on a list | Perform insertion sort on a list | [Leetcode](https://leetcode.com/problems/insertion-sort-list) | [Solution](#insertion_sort) | `O(n^2)` | `O(1)`
 ---
 
 ## Read-Only Problems <a name="ro_problems"></a>
@@ -121,7 +144,7 @@ node_type find_kth_last(node_type head, int k):
 
 ---
 
-### Determine if two lists intersect/overlap <a name="is_intersecting"></a>
+### Determine if two lists intersect/overlap <a name="intersect"></a>
 Steps:
 1. Count the number of nodes in each list
 1. Advance a pointer from the head of the longer list so that it is at the same distance from the end as the number of nodes in the shorter list
@@ -430,6 +453,7 @@ While the above works perfectly well, the `insert_after()` call could be inlined
 
 ---
 
+<a name="reverse_sublist"></a>
 #### Variant: Reverse a sublist
 Reverse the sublist specified by the range `[first, last)` in a list. This is a more general case of the problem above in that the pushing of elements into the stack needs to be deferred till the `first` node is found (**while**-loop on lines 4-5 below) in the list and should stop (**while**-loop condition on line 6 below) at the node before the `last` node.
 
@@ -460,6 +484,11 @@ If the range is expressed as `[first, last]` instead, replace the **while**-loop
  6  while (head != NULL and head != last.next):
 ```
 **Note:** An empty range may not be specified using inclusive bounds
+
+---
+
+<a name="reverse_k_group"></a>
+#### Variant: Reverse in `k`-group
 
 ---
 
@@ -539,6 +568,11 @@ node_type merge(node_type head1, node_type head2):
 
 ---
 
+
+### Fold a list <a name="fold"></a>
+
+---
+
 ### Split a list into two lists <a name="split"></a>
 One with odd numbered nodes and the other with the rest of the nodes
 
@@ -558,6 +592,10 @@ Steps:
 ---
 
 ### Sort a list <a name="sort"></a>
+
+---
+
+### Insertion sort a list <a name="insertion_sort"></a>
 
 ---
 
