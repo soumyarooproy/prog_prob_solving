@@ -68,13 +68,12 @@ In this class of problems, the input list is not modified.
 ### Find the length of a list <a name="find_length"></a>
 Iterate through the entire list and count the number of nodes:
 ```python
-int find(node_type head):
-1   node = head
-2   count = 0
-3   while (node != NULL):
-4       count = count + 1
-5       node = node.next
-6   return count
+int find_length (node_type head):
+    count = 0
+    while head != NULL:
+        count = count + 1
+        head = head.next
+    return count
 ```
 
 ---
@@ -82,13 +81,12 @@ int find(node_type head):
 ### Find an element in a list <a name="find_element"></a>
 Just iterate through the list looking for the element:
 ```python
-node_type find(node_type head, key_type key):
-1   node = head
-2   while (node != NULL):
-3       if node.key == key:
-4           return node
-5       node = node.next
-6   return NULL
+node_type find_key (node_type head, key_type key):
+    while head != NULL:
+        if head.key == key:
+            return head
+        head = head.next
+    return NULL
 ```
 
 ---
@@ -96,49 +94,64 @@ node_type find(node_type head, key_type key):
 ### Find the `k`-th node in the list <a name="find_kth"></a>
 Advance `k` nodes in the list:
 ```python
-node_type find_kth(node_type head, int k):
-1   node = head
-2   count = 0
-3   while (node != NULL and count < k):
-4       count = count + 1
-5       node = node.next
-6   return node
+node_type find_kth (node_type head, int k):
+    count = 0
+    while head != NULL and count < k:
+        count = count + 1
+        head = head.next
+    return head
 ```
+Return `NULL` if `k` is greater than the length of the list.
 
 ---
 
 ### Find the middle node of a list <a name="find_middle"></a>
-Use `slow` and `fast` iterators such that the `fast` iterator moves at twice the speed of the `slow` iterator:
+Use a `fast` iterator such that it moves twice as fast as a regular iterator:
 ```python
 node_type find_mid(node_type head):
-1   slow = fast = head
-2   while (fast != NULL and fast.next != NULL):
-3       slow = node.next
-4       fast = fast.next.next
-5   return slow
+    fast = head
+    while (fast != NULL and fast.next != NULL):
+        head = head.next
+        fast = fast.next.next
+    return slow
 ```
+
+For even-length lists, the middle node could be one of the one of the two middle nodes. Tweak your code according to what's specified by the problem statement. As an example, if the problem statement is to find the median of the values in the list (given that the linked list is sorted), the average value of data/keys in the middle two nodes needs to be computed for even-length lists.
 
 ---
 
 ### Find the `k`-th last node from the list <a name="find_kth_last"></a>
-Use `leader` and `follower` iterators such that 'leader' iterator is `k` nodes ahead of `follower` iterator:
+Use a `leader` iterator and move it `k` nodes into the list at which point start a second (follower) iterator and move both of them in tandem till `leader` hits the end of the list:
 ```python
-node_type find_kth_last(node_type head, int k):
- 1  leader = head
- 2  count = 0
- 3  while (leader != NULL and count < k):
- 4      count = count + 1
- 5      leader = leader.next
- 6  follower = head
- 7  while (leader != NULL):
- 8      leader = leader.next
- 9      follower = follower.next
-10  return follower
+node_type find_kth_last (node_type head, int k):
+    leader = head
+    count = 0
+    while leader != NULL and count < k:
+        count = count + 1
+        leader = leader.next
+    while leader != NULL:
+        leader = leader.next
+        head = head.next
+    return head
 ```
+The above implementation returns `head` if `k` is greater than the list length. Instead, if `NULL` is desired in this case, check if `leader` is `NULL` right before the second `while`-loop and return `NULL` if so.
 
 ---
 
-### Determine if a list has a cycle <a name="is_cycle"></a>
+### Determine if a list has a cycle <a name="has_cycle"></a>
+Use a `fast` iterator such that it moves twice as fast as a regular iterator. If the two iterators end up pointing to the same node at any point, it indicates presence of a cycle. Refer to [Tortoise and Hare Algorithm](https://en.wikipedia.org/wiki/Cycle_detection#Floyd's_Tortoise_and_Hare).
+
+```python
+bool has_cycle(node_type head):
+    fast = head
+    while head != NULL:
+        head = head.next
+        fast = fast.next.next
+        if head == fast:
+            return True
+    return False
+```
+
 
 #### Variant: Find the intersecting node
 
@@ -146,40 +159,61 @@ node_type find_kth_last(node_type head, int k):
 
 ### Determine if two lists intersect/overlap <a name="intersect"></a>
 Steps:
-1. Count the number of nodes in each list
-1. Advance a pointer from the head of the longer list so that it is at the same distance from the end as the number of nodes in the shorter list
-1. Start a pointer at the head of the shorter list and advance both of them in tandem
-1. If they become equal before becoming NULL, the lists intersect; otherwise, not
+1. Count the number of nodes in each list (lines `1` - `2` below)
+1. Advance a pointer from the head of the longer list so that it is at the same distance from the end as the number of nodes in the shorter list (lines `3` - `5` below; note that the `if`-block in lines `3` - `4` ensures that `head1` is not the shorter of the two lists)
+1. Start a pointer at the head of the shorter list and advance both of them in tandem (lines `6` - `11`)
+1. If they become equal before becoming NULL, the lists intersect; otherwise, not (lines `8` and `11`, respectively)
 
-#### Variant: What if there is a cycle?
+```python
+bool do_intersect (node_type head1, node_type head2):
+ 1  l1 = get_length(head1)
+ 2  l2 = get_length(head2)
+ 3  if l2 > l1:
+ 4      l1, head1, l2, head2 = l2, head2, l1, head1
+ 5  head1 = find_kth(head1, l1 - l2)
+ 6  while head1 != NULL:
+ 7      if head1 == head2:
+ 8          return True
+ 9      head1 = head1.next
+10      head2 = head2.next
+11  return False
+```
+
+#### Variant: What if there were a cycle?
 
 ---
 
 ### Find the first mismatching nodes between two lists <a name="mismatch"></a>
+Given two lists, determine the nodes for which the keys do not match. Return those nodes. Return `NULL`s if the lists are identical.
 ```python
-(node_type, node_type) mismatch(node_type head1, node_type head2):
- 1  while (head1 != NULL and head2 != NULL and head1.key == head2.key):
- 2      head1 = head1.next
- 3      head2 = head2.next
- 4  return (head1, head2)
+(node_type, node_type) mismatch (node_type head1, node_type head2):
+    while head1 != NULL and head2 != NULL and head1.key == head2.key:
+        head1 = head1.next
+        head2 = head2.next
+    return (head1, head2)
 ```
 
 ---
 
 ### Compare two lists <a name="compare"></a>
+Given two lists, compare if they store the same ordered sequences.
 ```python
-bool compare(node_type head1, node_type head2):
+bool compare (node_type head1, node_type head2):
  1  (end1, end2) = mismatch(head1, head2)
  2  return end1 == NULL and end2 == NULL
 ```
 
 ---
 
-### Determine if a list is a sublist of another <a name="sublist"></a>
+### Determine if a list is a subsequence of another <a name="sublist"></a>
+Given two lists, determine if the second ordered sequence is a (non-contiguous) subseqeunce of another.
 ```python
-bool includes(node_type head1, node_type head2):
+bool is_subsequence (node_type head1, node_type head2):
 ...
 ```
+
+#### Variant: Determine if a list is a sublist of another
+Given two lists, determine if the second ordered sequence is a contiguous subseqeunce of another.
 
 ---
 
